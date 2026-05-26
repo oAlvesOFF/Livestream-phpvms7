@@ -1,0 +1,16 @@
+{
+    "name": "LiveStream",
+    "alias": "livestream",
+    "description": "",
+    "keywords": [],
+    "active": 1,
+    "order": 0,
+    "providers": [
+        "Modules\\LiveStream\\Providers\\AppServiceProvider",
+        "Modules\\LiveStream\\Providers\\EventServiceProvider",
+        "Modules\\LiveStream\\Providers\\RouteServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}
