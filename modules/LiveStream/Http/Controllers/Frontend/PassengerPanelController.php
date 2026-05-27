@@ -18,7 +18,11 @@ class PassengerPanelController extends Controller
     {
         $pirep = Pirep::with(['user', 'airline', 'aircraft', 'arr_airport', 'dpt_airport', 'position'])
             ->where('id', $pirep_id)
-            ->firstOrFail();
+            ->first();
+
+        if (!$pirep) {
+            return redirect('/')->with('error', 'O voo solicitado não foi encontrado ou já aterrou.');
+        }
 
         $isActive = ($pirep->state == PirepState::IN_PROGRESS);
 
@@ -37,9 +41,12 @@ class PassengerPanelController extends Controller
             ->where('pirep_id', $pirep->id)
             ->sum('points_awarded');
 
+        $streamProfile = \Modules\LiveStream\Models\LiveStreamPilot::where('user_id', $pirep->user_id)->first();
+
         return view('livestream::passenger_panel', [
             'pirep'              => $pirep,
             'user'               => $pirep->user,
+            'streamProfile'      => $streamProfile,
             'isActive'           => $isActive,
             'menuType'           => $menuType,
             'interactionCount'   => $interactionCount,

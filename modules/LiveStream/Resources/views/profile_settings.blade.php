@@ -201,6 +201,17 @@ input:checked + .ls-slider:before { transform:translateX(20px); }
   {{-- Flash messages --}}
   @include('flash::message')
 
+  {{-- Validation errors --}}
+  @if($errors->any())
+    <div style="background:rgba(220,53,69,0.1); border:1px solid rgba(220,53,69,0.3); border-radius:10px; padding:15px; margin-bottom:20px; color:#ff6b7a;">
+      <ul style="margin:0; padding-left:20px;">
+        @foreach($errors->all() as $err)
+          <li>{{ $err }}</li>
+        @endforeach
+      </ul>
+    </div>
+  @endif
+
   {{-- Hero --}}
   <div class="ls-hero">
     <div class="ls-hero-inner">
@@ -210,7 +221,7 @@ input:checked + .ls-slider:before { transform:translateX(20px); }
       </h2>
       <p>Liga as tuas plataformas de stream. Quando fizeres um voo ao vivo, o teu status aparece automaticamente no Live Map e na lista de pilotos!</p>
 
-      @if(Auth::user()->is_live)
+      @if(optional($streamProfile)->is_live)
         <div class="ls-live-badge">
           <div class="ls-live-dot"></div>
           ESTÁS LIVE AGORA
@@ -229,7 +240,7 @@ input:checked + .ls-slider:before { transform:translateX(20px); }
       <div class="ls-card-header">
         <div class="ls-card-icon icon-twitch"><i class="fab fa-twitch"></i></div>
         <h5>Twitch</h5>
-        @if(Auth::user()->twitch_username)
+        @if(optional($streamProfile)->twitch_username)
           <span style="margin-left:auto; font-size:.72rem; color:#9146FF; font-weight:700;">
             <i class="fas fa-check-circle me-1"></i>Configurado
           </span>
@@ -240,7 +251,7 @@ input:checked + .ls-slider:before { transform:translateX(20px); }
         <div class="ls-input-group">
           <span class="ls-prefix">twitch.tv/</span>
           <input type="text" name="twitch_username" id="twitch_username" class="ls-input"
-            value="{{ old('twitch_username', Auth::user()->twitch_username ?? '') }}"
+            value="{{ old('twitch_username', optional($streamProfile)->twitch_username ?? '') }}"
             placeholder="o_teu_username" autocomplete="off">
         </div>
         <div class="ls-hint">Escreve apenas o nome do canal (ex: <strong>flyazores</strong>), sem o URL completo.</div>
@@ -259,7 +270,7 @@ input:checked + .ls-slider:before { transform:translateX(20px); }
       <div class="ls-card-header">
         <div class="ls-card-icon icon-youtube"><i class="fab fa-youtube"></i></div>
         <h5>YouTube</h5>
-        @if(Auth::user()->youtube_channel_id)
+        @if(optional($streamProfile)->youtube_channel_id)
           <span style="margin-left:auto; font-size:.72rem; color:#FF0000; font-weight:700;">
             <i class="fas fa-check-circle me-1"></i>Configurado
           </span>
@@ -268,7 +279,7 @@ input:checked + .ls-slider:before { transform:translateX(20px); }
       <div class="ls-card-body">
         <label class="ls-label" for="youtube_channel_id">ID do Canal YouTube</label>
         <input type="text" name="youtube_channel_id" id="youtube_channel_id" class="ls-input no-prefix yt"
-          value="{{ old('youtube_channel_id', Auth::user()->youtube_channel_id ?? '') }}"
+          value="{{ old('youtube_channel_id', optional($streamProfile)->youtube_channel_id ?? '') }}"
           placeholder="UC_x5XG1OV2P6uZZ5FSM9Ttw" autocomplete="off">
         <div class="ls-hint">
           Encontra o teu Channel ID em <a href="https://www.youtube.com/account_advanced" target="_blank">youtube.com/account_advanced</a>. Deixa em branco se usares só Twitch.
@@ -281,7 +292,7 @@ input:checked + .ls-slider:before { transform:translateX(20px); }
       <div class="ls-card-header">
         <div class="ls-card-icon icon-discord"><i class="fab fa-discord"></i></div>
         <h5>Discord Webhook (Notificação Automática)</h5>
-        @if(Auth::user()->discord_webhook_url ?? false)
+        @if(optional($streamProfile)->discord_webhook_url ?? false)
           <span style="margin-left:auto; font-size:.72rem; color:#5865F2; font-weight:700;">
             <i class="fas fa-check-circle me-1"></i>Ativo
           </span>
@@ -290,7 +301,7 @@ input:checked + .ls-slider:before { transform:translateX(20px); }
       <div class="ls-card-body">
         <label class="ls-label" for="discord_webhook">URL do Webhook do Discord</label>
         <input type="url" name="discord_webhook" id="discord_webhook" class="ls-input no-prefix dc"
-          value="{{ old('discord_webhook', Auth::user()->discord_webhook_url ?? '') }}"
+          value="{{ old('discord_webhook', optional($streamProfile)->discord_webhook_url ?? '') }}"
           placeholder="https://discord.com/api/webhooks/..." autocomplete="off">
         <div class="ls-hint">
           Quando iniciares um voo ao vivo, será enviada uma mensagem automática para o teu servidor Discord. 
@@ -312,13 +323,13 @@ input:checked + .ls-slider:before { transform:translateX(20px); }
             <p>Mostra altitude, velocidade, rumo e fase de voo diretamente no teu OBS como uma browser source transparente.</p>
           </div>
           <label class="ls-switch">
-            <input type="checkbox" name="obs_overlay_enabled" id="obs_overlay_enabled"
-              {{ (Auth::user()->obs_overlay_enabled ?? false) ? 'checked' : '' }}>
+            <input type="checkbox" name="obs_overlay_enabled" id="obs_overlay_enabled" value="1"
+              {{ (optional($streamProfile)->obs_overlay_enabled ?? false) ? 'checked' : '' }}>
             <span class="ls-slider"></span>
           </label>
         </div>
 
-        @if(Auth::user()->obs_overlay_enabled ?? false)
+        @if(optional($streamProfile)->obs_overlay_enabled ?? false)
         <div class="obs-url-box">
           <p>Adiciona como <strong>Browser Source</strong> no OBS (1920×1080, fundo transparente):</p>
           

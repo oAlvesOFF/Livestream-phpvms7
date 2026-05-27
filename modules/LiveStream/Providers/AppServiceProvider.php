@@ -3,9 +3,11 @@
 namespace Modules\LiveStream\Providers;
 
 use App\Contracts\Modules\ServiceProvider;
+use Illuminate\Support\Facades\View;
+use Modules\LiveStream\Models\LiveStreamPilot;
 
 /**
- * @package $NAMESPACE$
+ * @package Modules\LiveStream
  */
 class AppServiceProvider extends ServiceProvider
 {
@@ -23,11 +25,13 @@ class AppServiceProvider extends ServiceProvider
         $this->registerTranslations();
         $this->registerConfig();
         $this->registerViews();
-
         $this->registerLinks();
 
-        // Uncomment this if you have migrations
-        // $this->loadMigrationsFrom(__DIR__ . '/../$MIGRATIONS_PATH$');
+        // Load module-owned migrations (creates livestream_pilots, passenger_interactions)
+        $this->loadMigrationsFrom(__DIR__ . '/../Database/migrations');
+
+        // Inject stream data into ASA_THEME views without touching the core User model
+        $this->registerViewComposers();
     }
 
     /**
@@ -39,14 +43,44 @@ class AppServiceProvider extends ServiceProvider
     }
 
     /**
-     * Add module links here
+     * View Composers — inject LiveStream data into theme views.
+     * This avoids modifying the core User model or the users table schema.
+     */
+    protected function registerViewComposers(): void
+    {
+        // --- Pilot Profile page ---
+        // Injects $livestreamProfile (LiveStreamPilot|null) for the viewed pilot
+        View::composer(
+            'layouts.ASA_THEME.profile.index',
+            function ($view) {
+                $data = $view->getData();
+                $userId = optional($data['user'] ?? null)->id;
+
+                $livestreamProfile = $userId
+                    ? LiveStreamPilot::where('user_id', $userId)->first()
+                    : null;
+
+                $view->with('livestreamProfile', $livestreamProfile);
+            }
+        );
+
+        // --- Pilots Roster page ---
+        // Injects $liveUserIds (int[]) — IDs of pilots currently live
+        View::composer(
+            'layouts.ASA_THEME.users.table',
+            function ($view) {
+                $liveUserIds = LiveStreamPilot::liveUserIds();
+                $view->with('liveUserIds', $liveUserIds);
+            }
+        );
+    }
+
+    /**
+     * Add module links here.
      */
     public function registerLinks(): void
     {
-        // Show this link if logged in
-        // $this->moduleSvc->addFrontendLink('LiveStream', '/livestream', '', $logged_in=true);
-
-        // Admin links:
+        // Admin link
         $this->moduleSvc->addAdminLink('LiveStream', '/admin/livestream');
     }
 
@@ -67,10 +101,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function registerViews()
     {
-        $viewPath = resource_path('views/modules/livestream');
+        $viewPath   = resource_path('views/modules/livestream');
         $sourcePath = __DIR__ . '/../Resources/views';
 
-        $this->publishes([$sourcePath => $viewPath,], 'views');
+        $this->publishes([$sourcePath => $viewPath], 'views');
 
         $this->loadViewsFrom(array_merge(array_map(function ($path) {
             return str_replace('default', setting('general.theme'), $path) . '/modules/livestream';

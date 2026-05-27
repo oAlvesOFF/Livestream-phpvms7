@@ -334,8 +334,8 @@
                     </div>
 
                     <div class="stream-wrapper">
-                        @if($user->is_live && $user->current_stream_url)
-                            <iframe src="{{ $user->current_stream_url }}&parent={{ request()->getHost() }}" allowfullscreen></iframe>
+                        @if(optional($streamProfile)->is_live && optional($streamProfile)->current_stream_url)
+                            <iframe src="{{ $streamProfile->current_stream_url }}&parent={{ request()->getHost() }}" allowfullscreen></iframe>
                         @else
                             <div class="stream-offline-screen">
                                 <i class="fas fa-video-slash"></i>
