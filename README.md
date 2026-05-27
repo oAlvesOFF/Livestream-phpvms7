@@ -1,63 +1,65 @@
-# LiveStream Module for phpVMS v7 ✈️📡
+# LiveStream Module for phpVMS 7
 
-*(Scroll down for English version)*
+![phpVMS 7](https://img.shields.io/badge/phpVMS-v7-blue) ![Status](https://img.shields.io/badge/Status-Stable-brightgreen) ![License](https://img.shields.io/badge/License-MIT-orange)
 
----
-
-## 🇵🇹 Versão em Português
-
-Bem-vindo ao **LiveStream Module** para o phpVMS v7! Este módulo transforma a tua Virtual Airline adicionando uma integração profunda com plataformas de streaming (Twitch e YouTube), permitindo aos pilotos transmitir os seus voos com funcionalidades avançadas.
-
-### 🌟 Funcionalidades Principais
-
-- **OBS / Streamlabs Overlay:** Um URL dedicado (`/live/overlay/{pirep_id}`) com fundo transparente que mostra a telemetria ao vivo do voo (Altitude, Velocidade, Rumo, Fase de Voo) diretamente no OBS, com atualizações automáticas via vmsACARS.
-- **Integração Twitch & YouTube:** Os pilotos podem adicionar o seu canal nas definições de perfil. O sistema mostra quando estão LIVE.
-- **Notificações Automáticas no Discord:** Envia um webhook para o Discord da VA quando um piloto entra em voo ao vivo.
-- **Painel do Passageiro Interativo:** Um painel público (`/live/passenger/{pirep_id}`) onde os visitantes podem assistir à stream e "interagir" com o piloto oferecendo snacks, cafés, jantares (ou reclamações!), com um sistema de pontuação.
-- **Design Premium Glassmorphism:** O módulo inclui um design escuro e imersivo, feito à medida para encaixar perfeitamente em temas modernos como o ASA_THEME.
-- **Controlador Core Autónomo:** As rotas principais do módulo estão embebidas no RouteServiceProvider do Laravel para garantir 100% de funcionamento e impedir que erros de cache do phpVMS escondam o menu.
-
-### 🚀 Instalação (Sem Acesso SSH / Shared Host)
-
-Se usas um alojamento partilhado (cPanel, Plesk, etc.) e não tens acesso ao terminal, podes instalar o módulo em 3 passos simples:
-
-1. **Upload dos Ficheiros:**
-   Copia todo o conteúdo desta pasta (`app/`, `modules/`, `public/`, `resources/`) para a raiz da instalação do teu phpVMS (normalmente dentro da pasta `public_html`). Substitui os ficheiros se for pedido.
-   *Nota: O módulo inclui modificações seguras ao `RouteServiceProvider.php` para garantir que as rotas estão sempre ativas.*
-
-2. **Registar e Ativar na Base de Dados:**
-   Abre o teu navegador e acede ao seguinte link para registar o módulo automaticamente e limpar as caches:
-   `https://[o-teu-site.com]/register_livestream.php`
-
-3. **Verificação Final:**
-   Vai ao teu perfil no phpVMS. Deverás ver agora o botão "Stream Settings" na barra de navegação superior (no dropdown do perfil) ou na sidebar.
+🌍 **[English](#english)** | 🇵🇹 **[Português](#portugues)**
 
 ---
 
-## 🇬🇧 English Version
+<a name="english"></a>
+## 🌍 English Documentation
 
-Welcome to the **LiveStream Module** for phpVMS v7! This module upgrades your Virtual Airline by adding deep integration with streaming platforms (Twitch and YouTube), empowering your pilots to broadcast their flights with advanced tools.
+The **LiveStream** module is a premium, fully standalone addon for phpVMS 7 designed to integrate Twitch, YouTube, Discord, and vmsACARS telemetry into a stunning, interactive passenger panel and an OBS overlay. 
 
-### 🌟 Main Features
+With a beautiful dark glassmorphism aesthetic, it allows virtual airline pilots to stream their flights like professionals.
 
-- **OBS / Streamlabs Overlay:** A dedicated transparent browser source URL (`/live/overlay/{pirep_id}`) that displays live flight telemetry (Altitude, Speed, Heading, Flight Phase) straight into OBS, updating automatically via vmsACARS.
-- **Twitch & YouTube Integration:** Pilots can bind their channels in their profile settings. The VA will know when they are broadcasting.
-- **Discord Automated Webhooks:** Sends a rich notification to your VA's Discord server whenever a pilot starts a live flight.
-- **Interactive Passenger Panel:** A public-facing panel (`/live/passenger/{pirep_id}`) where visitors can watch the embedded stream and "interact" with the pilot by offering snacks, coffee, meals, or complaints, complete with a scoring system.
-- **Premium Glassmorphism Design:** Dark, immersive aesthetics tailored to seamlessly integrate with modern templates like ASA_THEME.
-- **Standalone Core Controller:** Critical routes are injected into Laravel's core RouteServiceProvider to guarantee 100% uptime, preventing phpVMS cache quirks from hiding the module menu.
+### ✨ Features
+- **Passenger Panel (`/live/passenger/{pirep_id}`)**: A beautiful, public-facing dashboard with glassmorphism UI where viewers can see real-time flight telemetry (Altitude, Speed, Heading, Vertical Speed, Distance).
+- **OBS / Streamlabs Overlay (`/live/overlay/{pirep_id}`)**: A fully transparent overlay you can add to your broadcasting software. It automatically updates flight data every 8 seconds with dynamic glowing animations.
+- **Smart PIREP Detection**: The pilot profile settings (`/live/profile`) automatically detect if the pilot has a flight *In Progress* via vmsACARS and automatically populates the `{pirep_id}` for the OBS URL.
+- **Twitch & YouTube Integration**: Link your channel to show if you are live, pulling viewer count and stream title.
+- **Discord Webhooks**: Automatically sends a webhook notification to your Discord server when you start a live flight.
+- **Fully Independent**: Uses its own routing (`Modules/LiveStream/Http/Routes/web.php`) and requires zero modifications to the core phpVMS files.
 
-### 🚀 Installation (No SSH / Shared Hosting)
+### ⚙️ Installation
+1. Upload the `LiveStream` folder to your `modules/` directory in your phpVMS 7 installation.
+2. Go to your phpVMS Admin Panel -> **Modules**.
+3. Find **LiveStream** and click **Enable**.
+4. *(Optional)* If you are using a custom theme (e.g. ASA_THEME), ensure your theme has a link pointing to the route: `{{ route('livestream.profile.index') }}` so pilots can access the settings.
 
-If you are on a shared host (cPanel, Plesk) and don't have SSH access, installation is just 3 easy steps:
+### 🎮 How to Use (For Pilots)
+1. Book a flight and start it using **vmsACARS**. The flight must be *In Progress*.
+2. Go to the **Stream Settings** page in your virtual airline profile (`/live/profile`).
+3. The system will detect your active flight and automatically replace the ID for your OBS URL.
+4. Copy the OBS URL and add it to OBS Studio as a **Browser Source** (Size: 1920x1080, check "Transparent background").
+5. Share your **Passenger Panel** link with your viewers so they can follow your telemetry live!
 
-1. **Upload the Files:**
-   Copy all the contents of this folder (`app/`, `modules/`, `public/`, `resources/`) to your phpVMS root directory (usually `public_html`). Overwrite files if prompted.
-   *Note: This includes a safe, permanent modification to `RouteServiceProvider.php` to ensure routes never fail to load.*
+---
 
-2. **Register & Activate via Database:**
-   Open your web browser and navigate to the following link to automatically insert the module into the database and clear all caches:
-   `https://[your-domain.com]/register_livestream.php`
+<a name="portugues"></a>
+## 🇵🇹 Documentação em Português
 
-3. **Final Check:**
-   Go to your profile on your phpVMS frontend. You should now see the "Stream Settings" button in your top navbar dropdown or sidebar.
+O módulo **LiveStream** é um addon premium e totalmente independente para o phpVMS 7 desenhado para integrar Twitch, YouTube, Discord e a telemetria do vmsACARS num painel interativo de passageiros e num overlay de OBS.
+
+Com uma estética "dark glassmorphism", permite aos pilotos da companhia aérea virtual transmitirem os seus voos como profissionais.
+
+### ✨ Funcionalidades
+- **Painel do Passageiro (`/live/passenger/{pirep_id}`)**: Um dashboard público com design "glassmorphism" onde os espectadores podem ver a telemetria do voo em tempo real (Altitude, Velocidade, Rumo, Velocidade Vertical, Distância).
+- **Overlay para OBS / Streamlabs (`/live/overlay/{pirep_id}`)**: Um overlay totalmente transparente que pode adicionar ao seu software de stream. Atualiza os dados do voo automaticamente a cada 8 segundos com animações dinâmicas ("glow").
+- **Deteção Inteligente de PIREP**: A página de definições do piloto (`/live/profile`) deteta automaticamente se o piloto tem um voo *In Progress* via vmsACARS e preenche sozinho o `{pirep_id}` no URL do OBS.
+- **Integração com Twitch e YouTube**: Associe o seu canal para mostrar se está em direto, exibindo o número de viewers e o título da stream.
+- **Webhooks do Discord**: Envia automaticamente uma notificação para o seu servidor de Discord quando inicia um voo ao vivo.
+- **Totalmente Independente**: Utiliza o seu próprio sistema de rotas (`Modules/LiveStream/Http/Routes/web.php`) e não requer qualquer modificação aos ficheiros originais "Core" do phpVMS.
+
+### ⚙️ Instalação
+1. Faça o upload da pasta `LiveStream` para dentro do diretório `modules/` na sua instalação do phpVMS 7.
+2. Vá ao Painel de Administração do phpVMS -> **Modules**.
+3. Encontre o módulo **LiveStream** e clique em **Ativar (Enable)**.
+4. *(Opcional)* Se estiver a usar um tema personalizado (ex: ASA_THEME), certifique-se de que o seu tema tem um link a apontar para a rota: `{{ route('livestream.profile.index') }}` para que os pilotos possam aceder às definições.
+
+### 🎮 Como Utilizar (Para Pilotos)
+1. Reserve um voo e inicie-o utilizando o **vmsACARS**. O voo tem de estar *In Progress*.
+2. Vá à página de **Definições de Stream** no seu perfil da companhia (`/live/profile`).
+3. O sistema irá detetar o seu voo ativo e substituirá automaticamente o ID no link do seu OBS.
+4. Copie o URL do OBS e adicione-o ao OBS Studio como uma **Browser Source** (Tamanho: 1920x1080, marque a caixa "Fundo Transparente").
+5. Partilhe o link do **Painel do Passageiro** com os seus espectadores para que possam acompanhar a sua telemetria ao vivo!
